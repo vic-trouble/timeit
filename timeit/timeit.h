@@ -23,4 +23,10 @@ namespace timeit
     return std::chrono::duration_cast<Duration>(elapsed);
   }
 
+  template <typename Duration = std::chrono::milliseconds>
+  Duration average(std::function<void()> function, unsigned iterations = 1)
+  {
+    return total<Duration>(function, iterations) / iterations;
+  }
+
 }

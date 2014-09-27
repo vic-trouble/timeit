@@ -81,5 +81,17 @@ namespace Tests
       Assert::ExpectException<std::invalid_argument>([&](){ timeit::total(empty); });
     }
 
+    TEST_METHOD(AverageShouldReturnLessThanTotalWhenMultipleIterations)
+    {
+      std::chrono::milliseconds delay(10);
+      auto func = [delay](){ std::this_thread::sleep_for(delay); };
+      unsigned iterations = 2;
+
+      auto total = timeit::total(func, iterations);
+      auto avg = timeit::average(func, iterations);
+
+      Assert::IsTrue(avg < total);
+    }
+
   };
 }
