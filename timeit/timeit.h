@@ -60,4 +60,16 @@ namespace timeit
       std::chrono::duration_cast<Duration>(max));
   }
 
+  template <typename Duration = default_duration>
+  Duration min(std::function<void()> function, unsigned iterations = 1)
+  {
+    return minmax<Duration>(function, iterations).first;
+  }
+
+  template <typename Duration = default_duration>
+  Duration max(std::function<void()> function, unsigned iterations = 1)
+  {
+    return minmax<Duration>(function, iterations).second;
+  }
+
 }

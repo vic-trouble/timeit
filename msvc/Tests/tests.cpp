@@ -117,5 +117,19 @@ namespace Tests
       Assert::ExpectException<std::invalid_argument>([&](){ timeit::minmax(empty); });
     }
 
+    TEST_METHOD(MinShouldThrowWhenEmptyFunc)
+    {
+      std::function<void()> empty;
+
+      Assert::ExpectException<std::invalid_argument>([&](){ timeit::min(empty); });
+    }
+
+    TEST_METHOD(MaxShouldThrowWhenEmptyFunc)
+    {
+      std::function<void()> empty;
+
+      Assert::ExpectException<std::invalid_argument>([&](){ timeit::max(empty); });
+    }
+
   };
 }
