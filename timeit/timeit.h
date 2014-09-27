@@ -6,7 +6,8 @@
 namespace timeit
 {
 
-  std::chrono::milliseconds total(std::function<void()> function, unsigned iterations = 1)
+  template <typename Duration = std::chrono::milliseconds>
+  Duration total(std::function<void()> function, unsigned iterations = 1)
   {
     using std::chrono::high_resolution_clock;
     auto before = high_resolution_clock::now();
@@ -16,7 +17,7 @@ namespace timeit
 
     auto after = high_resolution_clock::now();
     auto elapsed = after - before;
-    return std::chrono::duration_cast<std::chrono::milliseconds>(elapsed);
+    return std::chrono::duration_cast<Duration>(elapsed);
   }
 
 }

@@ -1,12 +1,10 @@
 /*
 
 // TODO: API for total, average, min, max
-// TODO: specify duration traits
 // TODO: disclaimer
 // TODO: CMake
 // TODO: CTest
 // TODO: travis
-// TODO: inline
 
 // TEST: throw on empty func
 
@@ -64,6 +62,17 @@ namespace Tests
       timeit::total(func, iterations);
 
       Assert::AreEqual(iterations, times);
+    }
+
+    TEST_METHOD(TotalShouldReturnNotLessThan10000usWhen10msFunc)
+    {
+      std::chrono::milliseconds delay(10);
+      std::chrono::microseconds delay_us(10 * 1000);
+      auto func = [delay](){ std::this_thread::sleep_for(delay); };
+
+      auto elapsed = timeit::total<std::chrono::microseconds>(func);
+
+      Assert::IsTrue(elapsed >= delay_us);
     }
 
   };
