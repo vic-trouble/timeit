@@ -32,6 +32,9 @@ namespace timeit
   template <typename Duration = std::chrono::milliseconds>
   std::pair<Duration, Duration> minmax(std::function<void()> function, unsigned iterations = 1)
   {
+    if (!function)
+      throw std::invalid_argument("can't measure empty function");
+
     using std::chrono::high_resolution_clock;
 
     using duration_type = decltype(high_resolution_clock::now() - high_resolution_clock::now());

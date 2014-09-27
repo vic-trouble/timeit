@@ -1,11 +1,11 @@
 /*
 
-// TODO: API for total, average, min, max
 // TODO: disclaimer
 // TODO: CMake
 // TODO: CTest
 // TODO: travis
 // TODO: const function &
+// TODO: extract default_duration
 
 */
 #include "stdafx.h"
@@ -93,6 +93,13 @@ namespace Tests
       Assert::IsTrue(avg < total);
     }
 
+    TEST_METHOD(AverageShouldThrowWhenEmptyFunc)
+    {
+      std::function<void()> empty;
+
+      Assert::ExpectException<std::invalid_argument>([&](){ timeit::average(empty); });
+    }
+
     TEST_METHOD(MinMaxShouldReturnMinLessThanMax)
     {
       auto delay = std::chrono::milliseconds(10);
@@ -103,6 +110,13 @@ namespace Tests
       std::tie(min, max) = timeit::minmax(func, iterations);
 
       Assert::IsTrue(min < max);
+    }
+
+    TEST_METHOD(MinMaxShouldThrowWhenEmptyFunc)
+    {
+      std::function<void()> empty;
+
+      Assert::ExpectException<std::invalid_argument>([&](){ timeit::minmax(empty); });
     }
 
   };
