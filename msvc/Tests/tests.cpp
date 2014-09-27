@@ -7,8 +7,8 @@
 // TODO: CMake
 // TODO: CTest
 // TODO: travis
+// TODO: inline
 
-// TEST: time >= 0
 // TEST: throw on empty func
 
 */
@@ -27,7 +27,7 @@ namespace Tests
   {
   public:
 
-    TEST_METHOD(ShouldCallFunc)
+    TEST_METHOD(TotalShouldCallFunc)
     {
       bool called = false;
       auto empty = [&called](){ called = true; };
@@ -37,7 +37,7 @@ namespace Tests
       Assert::IsTrue(called);
     }
 
-    TEST_METHOD(ShouldReturnNotLessThan10msWhen10msFunc)
+    TEST_METHOD(TotalShouldReturnNotLessThan10msWhen10msFunc)
     {
       std::chrono::milliseconds delay(10);
       auto func = [delay](){ std::this_thread::sleep_for(delay); };
@@ -45,6 +45,16 @@ namespace Tests
       auto elapsed = timeit::total(func);
 
       Assert::IsTrue(elapsed >= delay);
+    }
+
+    TEST_METHOD(TotalShouldReturnNotLessThan20msWhen10msFuncAnd2Iterations)
+    {
+      std::chrono::milliseconds delay(10);
+      auto func = [delay](){ std::this_thread::sleep_for(delay); };
+
+      auto elapsed = timeit::total(func, 2);
+
+      Assert::IsTrue(elapsed >= 2 * delay);
     }
 
   };
