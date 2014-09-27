@@ -34,8 +34,8 @@ namespace timeit
   {
     using std::chrono::high_resolution_clock;
 
-    decltype(high_resolution_clock::now() - high_resolution_clock::now()) min{}, max{};
-    bool first = true;  // TODO: refactor
+    using duration_type = decltype(high_resolution_clock::now() - high_resolution_clock::now());
+    duration_type min = duration_type::min(), max = duration_type::max();
 
     while (iterations--)
     {
@@ -44,11 +44,10 @@ namespace timeit
       auto after = high_resolution_clock::now();
       auto elapsed = after - before;
 
-      if (first || elapsed < min)
+      if (elapsed < min)
         min = elapsed;
-      if (first || elapsed > max)
+      if (elapsed > max)
         max = elapsed;
-      first = false;
     }
 
     return make_pair(
