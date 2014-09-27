@@ -101,5 +101,15 @@ namespace Tests
       Assert::IsTrue(stats.min < stats.max);
     }
 
+    TEST_METHOD(MinShouldAlwaysBeNonNegative)
+    {
+      std::chrono::milliseconds delay(10);
+      auto func = [delay](){ std::this_thread::sleep_for(delay); };
+
+      auto min = timeit::min(func);
+
+      Assert::IsTrue(min.count() >= 0);
+    }
+
   };
 }

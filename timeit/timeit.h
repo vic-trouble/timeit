@@ -23,7 +23,7 @@ namespace timeit
     using std::chrono::high_resolution_clock;
 
     using clock_duration = high_resolution_clock::duration;
-    clock_duration min = clock_duration::min(), max = clock_duration::max(), total = clock_duration::zero();
+    clock_duration min = clock_duration::max(), max = clock_duration::min(), total = clock_duration::zero();
 
     while (iterations--)
     {
