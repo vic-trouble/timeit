@@ -4,8 +4,6 @@
 // TODO: CMake
 // TODO: CTest
 // TODO: travis
-// TODO: const function &
-// TODO: extract default_duration
 
 */
 #include "stdafx.h"

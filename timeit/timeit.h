@@ -6,7 +6,9 @@
 namespace timeit
 {
 
-  template <typename Duration = std::chrono::milliseconds>
+  using default_duration = std::chrono::milliseconds;
+
+  template <typename Duration = default_duration>
   Duration total(std::function<void()> function, unsigned iterations = 1)
   {
     if (!function)
@@ -23,13 +25,13 @@ namespace timeit
     return std::chrono::duration_cast<Duration>(elapsed);
   }
 
-  template <typename Duration = std::chrono::milliseconds>
+  template <typename Duration = default_duration>
   Duration average(std::function<void()> function, unsigned iterations = 1)
   {
     return total<Duration>(function, iterations) / iterations;
   }
 
-  template <typename Duration = std::chrono::milliseconds>
+  template <typename Duration = default_duration>
   std::pair<Duration, Duration> minmax(std::function<void()> function, unsigned iterations = 1)
   {
     if (!function)
