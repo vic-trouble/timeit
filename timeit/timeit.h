@@ -39,8 +39,8 @@ namespace timeit
 
     using std::chrono::high_resolution_clock;
 
-    using duration_type = decltype(high_resolution_clock::now() - high_resolution_clock::now());
-    duration_type min = duration_type::min(), max = duration_type::max();
+    using clock_duration = high_resolution_clock::duration;
+    clock_duration min = clock_duration::min(), max = clock_duration::max();
 
     while (iterations--)
     {
