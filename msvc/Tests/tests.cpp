@@ -5,8 +5,7 @@
 // TODO: CMake
 // TODO: CTest
 // TODO: travis
-
-// TEST: throw on empty func
+// TODO: const function &
 
 */
 #include "stdafx.h"
@@ -73,6 +72,13 @@ namespace Tests
       auto elapsed = timeit::total<std::chrono::microseconds>(func);
 
       Assert::IsTrue(elapsed >= delay_us);
+    }
+
+    TEST_METHOD(TotalShouldThrowWhenEmptyFunc)
+    {
+      std::function<void()> empty;
+
+      Assert::ExpectException<std::invalid_argument>([&](){ timeit::total(empty); });
     }
 
   };
