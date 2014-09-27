@@ -8,9 +8,14 @@
 // TODO: CTest
 // TODO: travis
 
+// TEST: time >= 0
+// TEST: throw on empty func
+
 */
 #include "stdafx.h"
 #include "CppUnitTest.h"
+
+#include <thread>
 
 #include <timeit/timeit.h>
 
@@ -30,6 +35,16 @@ namespace Tests
       auto elapsed = timeit::total(empty);
 
       Assert::IsTrue(called);
+    }
+
+    TEST_METHOD(ShouldReturnNotLessThan10msWhen10msFunc)
+    {
+      std::chrono::milliseconds delay(10);
+      auto func = [delay](){ std::this_thread::sleep_for(delay); };
+
+      auto elapsed = timeit::total(func);
+
+      Assert::IsTrue(elapsed >= delay);
     }
 
   };
