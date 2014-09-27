@@ -21,12 +21,12 @@ namespace Tests
   {
   public:
 
-    TEST_METHOD(TotalShouldCallFunc)
+    TEST_METHOD(AllShouldCallFunc)
     {
       bool called = false;
       auto empty = [&called](){ called = true; };
 
-      auto elapsed = timeit::total(empty);
+      timeit::all(empty);
 
       Assert::IsTrue(called);
     }
@@ -51,12 +51,12 @@ namespace Tests
       Assert::IsTrue(elapsed >= 2 * delay);
     }
 
-    TEST_METHOD(TotalShouldCallFuncExactlyNumberOfIterations)
+    TEST_METHOD(AllShouldCallFuncExactlyNumberOfIterations)
     {
       unsigned iterations = 1000, times = 0;
       auto func = [&times](){ ++times; };
 
-      timeit::total(func, iterations);
+      timeit::all(func, iterations);
 
       Assert::AreEqual(iterations, times);
     }
@@ -72,11 +72,11 @@ namespace Tests
       Assert::IsTrue(elapsed >= delay_us);
     }
 
-    TEST_METHOD(TotalShouldThrowWhenEmptyFunc)
+    TEST_METHOD(AllShouldThrowWhenEmptyFunc)
     {
       std::function<void()> empty;
 
-      Assert::ExpectException<std::invalid_argument>([&](){ timeit::total(empty); });
+      Assert::ExpectException<std::invalid_argument>([&](){ timeit::all(empty); });
     }
 
     TEST_METHOD(AverageShouldReturnLessThanTotalWhenMultipleIterations)
@@ -85,50 +85,20 @@ namespace Tests
       auto func = [delay](){ std::this_thread::sleep_for(delay); };
       unsigned iterations = 2;
 
-      auto total = timeit::total(func, iterations);
-      auto avg = timeit::average(func, iterations);
+      auto stats = timeit::all(func, iterations);
 
-      Assert::IsTrue(avg < total);
+      Assert::IsTrue(stats.average < stats.total);
     }
 
-    TEST_METHOD(AverageShouldThrowWhenEmptyFunc)
-    {
-      std::function<void()> empty;
-
-      Assert::ExpectException<std::invalid_argument>([&](){ timeit::average(empty); });
-    }
-
-    TEST_METHOD(MinMaxShouldReturnMinLessThanMax)
+    TEST_METHOD(AllShouldReturnMinLessThanMax)
     {
       auto delay = std::chrono::milliseconds(10);
       auto func = [&delay]{ std::this_thread::sleep_for(delay); delay *= 2; };
       unsigned iterations = 3;
 
-      std::chrono::milliseconds min{}, max{};
-      std::tie(min, max) = timeit::minmax(func, iterations);
+      auto stats = timeit::all(func, iterations);
 
-      Assert::IsTrue(min < max);
-    }
-
-    TEST_METHOD(MinMaxShouldThrowWhenEmptyFunc)
-    {
-      std::function<void()> empty;
-
-      Assert::ExpectException<std::invalid_argument>([&](){ timeit::minmax(empty); });
-    }
-
-    TEST_METHOD(MinShouldThrowWhenEmptyFunc)
-    {
-      std::function<void()> empty;
-
-      Assert::ExpectException<std::invalid_argument>([&](){ timeit::min(empty); });
-    }
-
-    TEST_METHOD(MaxShouldThrowWhenEmptyFunc)
-    {
-      std::function<void()> empty;
-
-      Assert::ExpectException<std::invalid_argument>([&](){ timeit::max(empty); });
+      Assert::IsTrue(stats.min < stats.max);
     }
 
   };

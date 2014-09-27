@@ -8,31 +8,14 @@ namespace timeit
 
   using default_duration = std::chrono::milliseconds;
 
-  template <typename Duration = default_duration>
-  Duration total(std::function<void()> function, unsigned iterations = 1)
+  template <typename Duration>
+  struct stats
   {
-    if (!function)
-      throw std::invalid_argument("can't measure empty function");
-
-    using std::chrono::high_resolution_clock;
-    auto before = high_resolution_clock::now();
-
-    while (iterations--)
-      function();
-
-    auto after = high_resolution_clock::now();
-    auto elapsed = after - before;
-    return std::chrono::duration_cast<Duration>(elapsed);
-  }
+    Duration min, max, average, total;
+  };
 
   template <typename Duration = default_duration>
-  Duration average(std::function<void()> function, unsigned iterations = 1)
-  {
-    return total<Duration>(function, iterations) / iterations;
-  }
-
-  template <typename Duration = default_duration>
-  std::pair<Duration, Duration> minmax(std::function<void()> function, unsigned iterations = 1)
+  stats<Duration> all(std::function<void()> function, unsigned iterations = 1)
   {
     if (!function)
       throw std::invalid_argument("can't measure empty function");
@@ -40,7 +23,7 @@ namespace timeit
     using std::chrono::high_resolution_clock;
 
     using clock_duration = high_resolution_clock::duration;
-    clock_duration min = clock_duration::min(), max = clock_duration::max();
+    clock_duration min = clock_duration::min(), max = clock_duration::max(), total = clock_duration::zero();
 
     while (iterations--)
     {
@@ -49,27 +32,43 @@ namespace timeit
       auto after = high_resolution_clock::now();
       auto elapsed = after - before;
 
+      total += elapsed;
       if (elapsed < min)
         min = elapsed;
       if (elapsed > max)
         max = elapsed;
     }
 
-    return make_pair(
-      std::chrono::duration_cast<Duration>(min), 
-      std::chrono::duration_cast<Duration>(max));
+    stats<Duration> s;
+    s.min = std::chrono::duration_cast<Duration>(min);
+    s.max = std::chrono::duration_cast<Duration>(max);
+    s.average = std::chrono::duration_cast<Duration>(total / iterations);
+    s.total = std::chrono::duration_cast<Duration>(total);
+    return s;
+  }
+
+  template <typename Duration = default_duration>
+  Duration average(std::function<void()> function, unsigned iterations = 1)
+  {
+    return all<Duration>(function, iterations).average;
   }
 
   template <typename Duration = default_duration>
   Duration min(std::function<void()> function, unsigned iterations = 1)
   {
-    return minmax<Duration>(function, iterations).first;
+    return all<Duration>(function, iterations).min;
   }
 
   template <typename Duration = default_duration>
   Duration max(std::function<void()> function, unsigned iterations = 1)
   {
-    return minmax<Duration>(function, iterations).second;
+    return all<Duration>(function, iterations).max;
+  }
+
+  template <typename Duration = default_duration>
+  Duration total(std::function<void()> function, unsigned iterations = 1)
+  {
+    return all<Duration>(function, iterations).total;
   }
 
 }
