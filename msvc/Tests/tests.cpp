@@ -3,7 +3,6 @@
 // TODO: API for total, average, min, max
 // TODO: specify duration traits
 // TODO: disclaimer
-// TODO: specify iterations
 // TODO: CMake
 // TODO: CTest
 // TODO: travis
@@ -55,6 +54,16 @@ namespace Tests
       auto elapsed = timeit::total(func, 2);
 
       Assert::IsTrue(elapsed >= 2 * delay);
+    }
+
+    TEST_METHOD(TotalShouldCallFuncExactlyNumberOfIterations)
+    {
+      unsigned iterations = 1000, times = 0;
+      auto func = [&times](){ ++times; };
+
+      timeit::total(func, iterations);
+
+      Assert::AreEqual(iterations, times);
     }
 
   };
