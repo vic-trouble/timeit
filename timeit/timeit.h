@@ -29,4 +29,31 @@ namespace timeit
     return total<Duration>(function, iterations) / iterations;
   }
 
+  template <typename Duration = std::chrono::milliseconds>
+  std::pair<Duration, Duration> minmax(std::function<void()> function, unsigned iterations = 1)
+  {
+    using std::chrono::high_resolution_clock;
+
+    decltype(high_resolution_clock::now() - high_resolution_clock::now()) min{}, max{};
+    bool first = true;  // TODO: refactor
+
+    while (iterations--)
+    {
+      auto before = high_resolution_clock::now();
+      function();
+      auto after = high_resolution_clock::now();
+      auto elapsed = after - before;
+
+      if (first || elapsed < min)
+        min = elapsed;
+      if (first || elapsed > max)
+        max = elapsed;
+      first = false;
+    }
+
+    return make_pair(
+      std::chrono::duration_cast<Duration>(min), 
+      std::chrono::duration_cast<Duration>(max));
+  }
+
 }

@@ -93,5 +93,17 @@ namespace Tests
       Assert::IsTrue(avg < total);
     }
 
+    TEST_METHOD(MinMaxShouldReturnMinLessThanMax)
+    {
+      auto delay = std::chrono::milliseconds(10);
+      auto func = [&delay]{ std::this_thread::sleep_for(delay); delay *= 2; };
+      unsigned iterations = 3;
+
+      std::chrono::milliseconds min{}, max{};
+      std::tie(min, max) = timeit::minmax(func, iterations);
+
+      Assert::IsTrue(min < max);
+    }
+
   };
 }
