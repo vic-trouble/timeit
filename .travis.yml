@@ -1,1 +1,4 @@
 language: cpp
+
+before_script:
+ - chmod +x configure
