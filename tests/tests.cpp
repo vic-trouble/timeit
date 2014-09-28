@@ -88,7 +88,7 @@ namespace timeit
 
         TEST_METHOD(AllShouldCallFuncExactlyNumberOfIterations)
         {
-            unsigned iterations = 1000, times = 1;  // intentionally BUG
+            unsigned iterations = 1000, times = 0;
             auto func = [&times](){ ++times; };
 
             timeit::all(func, iterations);
