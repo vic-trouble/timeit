@@ -1,5 +1,5 @@
 default:
-	g++ -std=c++11 ./tests/tests.cpp -I. -o ./tests/tests
+	$(CXX) -std=c++0x -Wall -Werror -pedantic-errors ./tests/tests.cpp -I. -o ./tests/tests
 	
 clear:
 	rm ./tests/tests

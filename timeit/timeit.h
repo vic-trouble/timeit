@@ -1,12 +1,22 @@
 #pragma once
 
+#if !defined(__clang__)
+    #if __GNUC__ < 4 || (__GNUC__ == 4 && __GNUC_MINOR__ < 6)
+        #error This file requires GCC 4.6 or higher
+    #endif
+#endif
+
 #include <chrono>
 #include <functional>
 
 namespace timeit
 {
 
+#if defined(__clang__) || __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
     using default_duration = std::chrono::milliseconds;
+#else
+    typedef std::chrono::milliseconds default_duration;
+#endif
 
     template <typename Duration>
     struct stats
@@ -22,7 +32,11 @@ namespace timeit
 
         using std::chrono::high_resolution_clock;
 
+#if defined(__clang__) || __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
         using clock_duration = high_resolution_clock::duration;
+#else
+        typedef high_resolution_clock::duration clock_duration;
+#endif
         clock_duration min = clock_duration::max(), max = clock_duration::min(), total = clock_duration::zero();
 
         while (iterations--)
