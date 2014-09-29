@@ -6,6 +6,8 @@
 
 // ref
 #define TEST_METHOD(X) void X()
+#define ASSERT_TRUE(x) if (!(x)) throw Assert::assert_failed("assertion failed: " #x);
+#define ASSERT_EQUAL(x, y) if (!((x) == (y))) throw Assert::assert_failed("assertion failed: " #x " == " #y);
 
 namespace Assert
 {
@@ -17,19 +19,6 @@ namespace Assert
         {
         }
     };
-
-    void IsTrue(bool cond, const char *message="assertion failed")
-    {
-        if (!cond)
-            throw assert_failed(message);
-    }
-
-    template <typename T>
-    void AreEqual(const T& left, const T& right, const char *message="assertion failed")
-    {
-        if (!(left == right))
-            throw assert_failed(message);
-    }
 
     template <typename Exception>
     void ExpectException(std::function<void ()> func, const char *message="assertion failed")
@@ -63,7 +52,7 @@ namespace timeit
 
             timeit::all(empty);
 
-            Assert::IsTrue(called);
+            ASSERT_TRUE(called);
         }
 
         TEST_METHOD(TotalShouldReturnNotLessThan10msWhen10msFunc)
@@ -73,7 +62,7 @@ namespace timeit
 
             auto elapsed = timeit::total(func);
 
-            Assert::IsTrue(elapsed >= delay);
+            ASSERT_TRUE(elapsed >= delay);
         }
 
         TEST_METHOD(TotalShouldReturnNotLessThan20msWhen10msFuncAnd2Iterations)
@@ -83,7 +72,7 @@ namespace timeit
 
             auto elapsed = timeit::total(func, 2);
 
-            Assert::IsTrue(elapsed >= 2 * delay);
+            ASSERT_TRUE(elapsed >= 2 * delay);
         }
 
         TEST_METHOD(AllShouldCallFuncExactlyNumberOfIterations)
@@ -93,7 +82,7 @@ namespace timeit
 
             timeit::all(func, iterations);
 
-            Assert::AreEqual(iterations, times);
+            ASSERT_EQUAL(iterations, times);
         }
 
         TEST_METHOD(TotalShouldReturnNotLessThan10000usWhen10msFunc)
@@ -104,7 +93,7 @@ namespace timeit
 
             auto elapsed = timeit::total<std::chrono::microseconds>(func);
 
-            Assert::IsTrue(elapsed >= delay_us);
+            ASSERT_TRUE(elapsed >= delay_us);
         }
 
         TEST_METHOD(AllShouldThrowWhenEmptyFunc)
@@ -122,7 +111,7 @@ namespace timeit
 
             auto stats = timeit::all(func, iterations);
 
-            Assert::IsTrue(stats.average < stats.total);
+            ASSERT_TRUE(stats.average < stats.total);
         }
 
         TEST_METHOD(AllShouldReturnMinLessThanMax)
@@ -133,7 +122,7 @@ namespace timeit
 
             auto stats = timeit::all(func, iterations);
 
-            Assert::IsTrue(stats.min < stats.max);
+            ASSERT_TRUE(stats.min < stats.max);
         }
 
         TEST_METHOD(MinShouldAlwaysBeNonNegative)
@@ -143,7 +132,7 @@ namespace timeit
 
             auto min = timeit::min(func);
 
-            Assert::IsTrue(min.count() >= 0);
+            ASSERT_TRUE(min.count() >= 0);
         }
 		
     }
