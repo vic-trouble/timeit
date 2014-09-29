@@ -1,1 +1,6 @@
-msvc
+Debug
+Release
+*.sdf
+*.opensdf
+*.suo
+*.exe
