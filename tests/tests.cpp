@@ -4,99 +4,53 @@
 
 #include <timeit/timeit.h>
 
-// ref
-#define TEST_METHOD(X) void X()
-
-namespace Assert
-{
-    class assert_failed: public std::runtime_error
-    {
-    public:
-        explicit assert_failed(const char *what = "")
-        : std::runtime_error(what)
-        {
-        }
-    };
-
-    void IsTrue(bool cond, const char *message="assertion failed")
-    {
-        if (!cond)
-            throw assert_failed(message);
-    }
-
-    template <typename T>
-    void AreEqual(const T& left, const T& right, const char *message="assertion failed")
-    {
-        if (!(left == right))
-            throw assert_failed(message);
-    }
-
-    template <typename Exception>
-    void ExpectException(std::function<void ()> func, const char *message="assertion failed")
-    {
-        try
-        {
-            func();
-            throw assert_failed(message);
-        }
-        catch (const Exception &)
-        {
-            return;
-        }
-        catch (...)
-        {
-            throw assert_failed(message);
-        }
-    }
-}
-
-// ^ref
+#include "assert.h"
 
 namespace timeit
 {
     namespace tests
     {
-        TEST_METHOD(AllShouldCallFunc)
+        TEST(AllShouldCallFunc)
         {
             bool called = false;
             auto empty = [&called](){ called = true; };
 
             timeit::all(empty);
 
-            Assert::IsTrue(called);
+            ASSERT_TRUE(called);
         }
 
-        TEST_METHOD(TotalShouldReturnNotLessThan10msWhen10msFunc)
+        TEST(TotalShouldReturnNotLessThan10msWhen10msFunc)
         {
             std::chrono::milliseconds delay(10);
             auto func = [delay](){ std::this_thread::sleep_for(delay); };
 
             auto elapsed = timeit::total(func);
 
-            Assert::IsTrue(elapsed >= delay);
+            ASSERT_TRUE(elapsed >= delay);
         }
 
-        TEST_METHOD(TotalShouldReturnNotLessThan20msWhen10msFuncAnd2Iterations)
+        TEST(TotalShouldReturnNotLessThan20msWhen10msFuncAnd2Iterations)
         {
             std::chrono::milliseconds delay(10);
             auto func = [delay](){ std::this_thread::sleep_for(delay); };
 
             auto elapsed = timeit::total(func, 2);
 
-            Assert::IsTrue(elapsed >= 2 * delay);
+            ASSERT_TRUE(elapsed >= 2 * delay);
         }
 
-        TEST_METHOD(AllShouldCallFuncExactlyNumberOfIterations)
+        TEST(AllShouldCallFuncExactlyNumberOfIterations)
         {
             unsigned iterations = 1000, times = 0;
             auto func = [&times](){ ++times; };
 
             timeit::all(func, iterations);
 
-            Assert::AreEqual(iterations, times);
+            ASSERT_EQUAL(iterations, times);
         }
 
-        TEST_METHOD(TotalShouldReturnNotLessThan10000usWhen10msFunc)
+        TEST(TotalShouldReturnNotLessThan10000usWhen10msFunc)
         {
             std::chrono::milliseconds delay(10);
             std::chrono::microseconds delay_us(10 * 1000);
@@ -104,17 +58,17 @@ namespace timeit
 
             auto elapsed = timeit::total<std::chrono::microseconds>(func);
 
-            Assert::IsTrue(elapsed >= delay_us);
+            ASSERT_TRUE(elapsed >= delay_us);
         }
 
-        TEST_METHOD(AllShouldThrowWhenEmptyFunc)
+        TEST(AllShouldThrowWhenEmptyFunc)
         {
             std::function<void()> empty;
 
-            Assert::ExpectException<std::invalid_argument>([&](){ timeit::all(empty); });
+            ASSERT_THROW(std::invalid_argument, [&](){ timeit::all(empty); });
         }
 
-        TEST_METHOD(AverageShouldReturnLessThanTotalWhenMultipleIterations)
+        TEST(AverageShouldReturnLessThanTotalWhenMultipleIterations)
         {
             std::chrono::milliseconds delay(10);
             auto func = [delay](){ std::this_thread::sleep_for(delay); };
@@ -122,10 +76,10 @@ namespace timeit
 
             auto stats = timeit::all(func, iterations);
 
-            Assert::IsTrue(stats.average < stats.total);
+            ASSERT_TRUE(stats.average < stats.total);
         }
 
-        TEST_METHOD(AllShouldReturnMinLessThanMax)
+        TEST(AllShouldReturnMinLessThanMax)
         {
             auto delay = std::chrono::milliseconds(10);
             auto func = [&delay]{ std::this_thread::sleep_for(delay); delay *= 2; };
@@ -133,17 +87,17 @@ namespace timeit
 
             auto stats = timeit::all(func, iterations);
 
-            Assert::IsTrue(stats.min < stats.max);
+            ASSERT_TRUE(stats.min < stats.max);
         }
 
-        TEST_METHOD(MinShouldAlwaysBeNonNegative)
+        TEST(MinShouldAlwaysBeNonNegative)
         {
             std::chrono::milliseconds delay(10);
             auto func = [delay](){ std::this_thread::sleep_for(delay); };
 
             auto min = timeit::min(func);
 
-            Assert::IsTrue(min.count() >= 0);
+            ASSERT_TRUE(min.count() >= 0);
         }
 		
     }
@@ -154,15 +108,20 @@ int main()
     try
     {
         using namespace timeit::tests;
-        AllShouldCallFunc();
-		TotalShouldReturnNotLessThan10msWhen10msFunc();
-        TotalShouldReturnNotLessThan20msWhen10msFuncAnd2Iterations();
-        AllShouldCallFuncExactlyNumberOfIterations();
-        TotalShouldReturnNotLessThan10000usWhen10msFunc();
-        AllShouldThrowWhenEmptyFunc();
-        AverageShouldReturnLessThanTotalWhenMultipleIterations();
-        AllShouldReturnMinLessThanMax();
-        MinShouldAlwaysBeNonNegative();
+        auto test_cases = {
+            AllShouldCallFunc,
+            TotalShouldReturnNotLessThan10msWhen10msFunc,
+            TotalShouldReturnNotLessThan20msWhen10msFuncAnd2Iterations,
+            AllShouldCallFuncExactlyNumberOfIterations,
+            TotalShouldReturnNotLessThan10000usWhen10msFunc,
+            AllShouldThrowWhenEmptyFunc,
+            AverageShouldReturnLessThanTotalWhenMultipleIterations,
+            AllShouldReturnMinLessThanMax,
+            MinShouldAlwaysBeNonNegative};
+
+        for (auto &test: test_cases)
+            test();
+
         std::cout << "All OK" << std::endl;
         return 0;
     }
