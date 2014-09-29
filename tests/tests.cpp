@@ -108,15 +108,20 @@ int main()
     try
     {
         using namespace timeit::tests;
-        AllShouldCallFunc();
-		TotalShouldReturnNotLessThan10msWhen10msFunc();
-        TotalShouldReturnNotLessThan20msWhen10msFuncAnd2Iterations();
-        AllShouldCallFuncExactlyNumberOfIterations();
-        TotalShouldReturnNotLessThan10000usWhen10msFunc();
-        AllShouldThrowWhenEmptyFunc();
-        AverageShouldReturnLessThanTotalWhenMultipleIterations();
-        AllShouldReturnMinLessThanMax();
-        MinShouldAlwaysBeNonNegative();
+        auto test_cases = {
+            AllShouldCallFunc,
+            TotalShouldReturnNotLessThan10msWhen10msFunc,
+            TotalShouldReturnNotLessThan20msWhen10msFuncAnd2Iterations,
+            AllShouldCallFuncExactlyNumberOfIterations,
+            TotalShouldReturnNotLessThan10000usWhen10msFunc,
+            AllShouldThrowWhenEmptyFunc,
+            AverageShouldReturnLessThanTotalWhenMultipleIterations,
+            AllShouldReturnMinLessThanMax,
+            MinShouldAlwaysBeNonNegative};
+
+        for (auto &test: test_cases)
+            test();
+
         std::cout << "All OK" << std::endl;
         return 0;
     }
