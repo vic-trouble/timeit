@@ -1,8 +1,18 @@
 #pragma once
 
-#if !defined(__clang__)
+#if defined(__clang__)
+    #define TIMEIT_USING_TYPEDEF
+#elif defined(__GNUC__)
     #if __GNUC__ < 4 || (__GNUC__ == 4 && __GNUC_MINOR__ < 6)
         #error This file requires GCC 4.6 or higher
+    #elif __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 8)
+        #define TIMEIT_USING_TYPEDEF
+    #endif
+#elif defined(_MSC_VER)
+    #if _MSC_VER < 1800
+        #error This file require Visual Studio 2013
+    #else
+        #define TIMEIT_USING_TYPEDEF
     #endif
 #endif
 
@@ -12,7 +22,7 @@
 namespace timeit
 {
 
-#if defined(__clang__) || __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
+#ifdef TIMEIT_USING_TYPEDEF
     using default_duration = std::chrono::milliseconds;
 #else
     typedef std::chrono::milliseconds default_duration;
@@ -32,7 +42,7 @@ namespace timeit
 
         using std::chrono::high_resolution_clock;
 
-#if defined(__clang__) || __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
+#ifdef TIMEIT_USING_TYPEDEF
         using clock_duration = high_resolution_clock::duration;
 #else
         typedef high_resolution_clock::duration clock_duration;
