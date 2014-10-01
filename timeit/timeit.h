@@ -88,7 +88,7 @@ namespace timeit
     template <typename Duration = default_duration>
     Duration timeit(std::function<void()> function)
     {
-        return stat<Duration>(function, 1).min;
+        return stat<Duration>(function, 1).total;
     }
 
 }

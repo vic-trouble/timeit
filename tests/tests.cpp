@@ -99,6 +99,21 @@ namespace timeit
 
             ASSERT_TRUE(min.count() >= 0);
         }
+
+        TEST(HighPrecisionAverage)
+        {
+            int i = 0;
+            auto super_fast = [&i](){ ++i; };
+            auto iterations = 10000000;
+
+            timeit::stats<std::chrono::nanoseconds> stats = timeit::stat<std::chrono::nanoseconds>(super_fast, iterations);
+
+            const auto &total = stats.total;
+            std::cerr << total.count() << std::endl << iterations << std::endl << (total / iterations).count() << std::endl << (total.count() / iterations) << std::endl;
+
+            ASSERT_TRUE(stats.total.count() > iterations);  // if that fails, try increasing iterations
+            ASSERT_TRUE(stats.average.count() > 0);
+        }
 		
     }
 }
@@ -117,7 +132,9 @@ int main()
             StatShouldThrowWhenEmptyFunc,
             AverageShouldReturnLessThanTotalWhenMultipleIterations,
             StatShouldReturnMinLessThanMax,
-            MinShouldAlwaysBeNonNegative};
+            MinShouldAlwaysBeNonNegative,
+            HighPrecisionAverage
+            };
 
         for (auto &test: test_cases)
             test();

@@ -12,16 +12,17 @@ void generate(Container &container, size_t n)
     std::generate_n(std::back_inserter(container), n, [&val](){ return val++; });
 }
 
-int main()
+void benchmark(size_t N)
 {
-    constexpr size_t N = 1000000;
-
     std::vector<int> vector;
     std::list<int> list;
 
     auto sep = '\t';
     auto ms = "ms";
-    std::cout << "op" << sep << "vector" << sep << "list" << std::endl;
+    std::cout << "benchmark size " << N << std::endl 
+        << "op" 
+        << sep << "vector" 
+        << sep << "list" << std::endl;
 
     std::cout << "gen" 
         << sep << timeit::timeit([&](){ generate(vector, N); }).count() << ms
@@ -34,6 +35,16 @@ int main()
     std::cout << "clear"
         << sep << timeit::timeit([&](){ vector.clear(); }).count() << ms
         << sep << timeit::timeit([&](){ list.clear(); }).count() << ms << std::endl;
+}
+
+int main()
+{
+    size_t N = 1000;
+    for (size_t i = 0; i < 3; ++i)
+    {
+        benchmark(N);
+        N *= 100;
+    }
 
     return 0;
 }
