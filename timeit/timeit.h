@@ -85,4 +85,10 @@ namespace timeit
         return all<Duration>(function, iterations).total;
     }
 
+    template <typename Duration = default_duration>
+    Duration timeit(std::function<void()> function)
+    {
+        return all<Duration>(function, 1).min;
+    }
+
 }

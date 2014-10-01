@@ -5,21 +5,35 @@
 
 #include <timeit/timeit.h>
 
-template <template <typename, typename> class Container, size_t N>
-void generate()
+template <typename Container>
+void generate(Container &container, size_t n)
 {
-    Container<int, std::allocator<int>> v;
     int val = 0;
-    std::generate_n(std::back_inserter(v), N, [&val](){ return val++; });
+    std::generate_n(std::back_inserter(container), n, [&val](){ return val++; });
 }
 
 int main()
 {
     constexpr size_t N = 1000000;
+
+    std::vector<int> vector;
+    std::list<int> list;
+
     auto sep = '\t';
+    auto ms = "ms";
     std::cout << "op" << sep << "vector" << sep << "list" << std::endl;
+
     std::cout << "gen" 
-        << sep << timeit::min(generate<std::vector, N>, 10).count() << "ms"
-        << sep << timeit::min(generate<std::list, N>, 10).count() << "ms" << std::endl;
+        << sep << timeit::timeit([&](){ generate(vector, N); }).count() << ms
+        << sep << timeit::timeit([&](){ generate(list, N); }).count() << ms << std::endl;
+
+    std::cout << "find"
+        << sep << timeit::timeit([&](){ std::find(begin(vector), end(vector), N / 2); }).count() << ms
+        << sep << timeit::timeit([&](){ std::find(begin(list), end(list), N / 2); }).count() << ms << std::endl;
+
+    std::cout << "clear"
+        << sep << timeit::timeit([&](){ vector.clear(); }).count() << ms
+        << sep << timeit::timeit([&](){ list.clear(); }).count() << ms << std::endl;
+
     return 0;
 }
