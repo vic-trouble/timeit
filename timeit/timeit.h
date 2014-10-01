@@ -35,7 +35,7 @@ namespace timeit
     };
 
     template <typename Duration = default_duration>
-    stats<Duration> stat(std::function<void()> function, unsigned iterations = 1)
+    stats<Duration> stat(std::function<void()> function, const unsigned iterations = 1)
     {
         if (!function)
             throw std::invalid_argument("can't measure empty function");
@@ -49,7 +49,7 @@ namespace timeit
 #endif
         clock_duration min = clock_duration::max(), max = clock_duration::min(), total = clock_duration::zero();
 
-        while (iterations--)
+        for (auto i = iterations; i--; )
         {
             auto before = high_resolution_clock::now();
             function();

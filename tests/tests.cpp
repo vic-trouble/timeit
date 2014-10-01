@@ -106,10 +106,7 @@ namespace timeit
             auto super_fast = [&i](){ ++i; };
             auto iterations = 10000000;
 
-            timeit::stats<std::chrono::nanoseconds> stats = timeit::stat<std::chrono::nanoseconds>(super_fast, iterations);
-
-            const auto &total = stats.total;
-            std::cerr << total.count() << std::endl << iterations << std::endl << (total / iterations).count() << std::endl << (total.count() / iterations) << std::endl;
+            auto stats = timeit::stat<std::chrono::nanoseconds>(super_fast, iterations);
 
             ASSERT_TRUE(stats.total.count() > iterations);  // if that fails, try increasing iterations
             ASSERT_TRUE(stats.average.count() > 0);
@@ -123,7 +120,7 @@ int main()
     try
     {
         using namespace timeit::tests;
-        auto test_cases = {
+        std::function<void()> test_cases[] = {
             StatShouldCallFunc,
             TotalShouldReturnNotLessThan10msWhen10msFunc,
             TotalShouldReturnNotLessThan20msWhen10msFuncAnd2Iterations,
