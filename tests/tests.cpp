@@ -10,12 +10,12 @@ namespace timeit
 {
     namespace tests
     {
-        TEST(AllShouldCallFunc)
+        TEST(StatShouldCallFunc)
         {
             bool called = false;
             auto empty = [&called](){ called = true; };
 
-            timeit::all(empty);
+            timeit::stat(empty);
 
             ASSERT_TRUE(called);
         }
@@ -40,12 +40,12 @@ namespace timeit
             ASSERT_TRUE(elapsed >= 2 * delay);
         }
 
-        TEST(AllShouldCallFuncExactlyNumberOfIterations)
+        TEST(StatShouldCallFuncExactlyNumberOfIterations)
         {
             unsigned iterations = 1000, times = 0;
             auto func = [&times](){ ++times; };
 
-            timeit::all(func, iterations);
+            timeit::stat(func, iterations);
 
             ASSERT_EQUAL(iterations, times);
         }
@@ -61,11 +61,11 @@ namespace timeit
             ASSERT_TRUE(elapsed >= delay_us);
         }
 
-        TEST(AllShouldThrowWhenEmptyFunc)
+        TEST(StatShouldThrowWhenEmptyFunc)
         {
             std::function<void()> empty;
 
-            ASSERT_THROW(std::invalid_argument, [&](){ timeit::all(empty); });
+            ASSERT_THROW(std::invalid_argument, [&](){ timeit::stat(empty); });
         }
 
         TEST(AverageShouldReturnLessThanTotalWhenMultipleIterations)
@@ -74,18 +74,18 @@ namespace timeit
             auto func = [delay](){ std::this_thread::sleep_for(delay); };
             unsigned iterations = 2;
 
-            auto stats = timeit::all(func, iterations);
+            auto stats = timeit::stat(func, iterations);
 
             ASSERT_TRUE(stats.average < stats.total);
         }
 
-        TEST(AllShouldReturnMinLessThanMax)
+        TEST(StatShouldReturnMinLessThanMax)
         {
             auto delay = std::chrono::milliseconds(10);
             auto func = [&delay]{ std::this_thread::sleep_for(delay); delay *= 2; };
             unsigned iterations = 3;
 
-            auto stats = timeit::all(func, iterations);
+            auto stats = timeit::stat(func, iterations);
 
             ASSERT_TRUE(stats.min < stats.max);
         }
@@ -109,14 +109,14 @@ int main()
     {
         using namespace timeit::tests;
         auto test_cases = {
-            AllShouldCallFunc,
+            StatShouldCallFunc,
             TotalShouldReturnNotLessThan10msWhen10msFunc,
             TotalShouldReturnNotLessThan20msWhen10msFuncAnd2Iterations,
-            AllShouldCallFuncExactlyNumberOfIterations,
+            StatShouldCallFuncExactlyNumberOfIterations,
             TotalShouldReturnNotLessThan10000usWhen10msFunc,
-            AllShouldThrowWhenEmptyFunc,
+            StatShouldThrowWhenEmptyFunc,
             AverageShouldReturnLessThanTotalWhenMultipleIterations,
-            AllShouldReturnMinLessThanMax,
+            StatShouldReturnMinLessThanMax,
             MinShouldAlwaysBeNonNegative};
 
         for (auto &test: test_cases)
