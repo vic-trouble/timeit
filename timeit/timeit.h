@@ -66,6 +66,11 @@ namespace timeit
         stats<Duration> s;
         s.min = std::chrono::duration_cast<Duration>(min);
         s.max = std::chrono::duration_cast<Duration>(max);
+
+        // DEBUG
+        std::cout << "total = " << total.count() << ", iterations = " << iterations << ", total/iterations = " << (total.count() / iterations) << std::endl;
+        // ^ DEBUG
+
         s.average = std::chrono::duration_cast<Duration>(total / iterations);
         s.total = std::chrono::duration_cast<Duration>(total);
         return s;
