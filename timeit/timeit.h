@@ -1,5 +1,9 @@
 #pragma once
 
+/**
+    Info goes here...
+*/
+
 #if !defined(__clang__)
     #if __GNUC__ < 4 || (__GNUC__ == 4 && __GNUC_MINOR__ < 6)
         #error This file requires GCC 4.6 or higher
