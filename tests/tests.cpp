@@ -108,11 +108,6 @@ namespace timeit
 
             auto stats = timeit::stat<std::chrono::nanoseconds>(super_fast, iterations);
 
-            // DEBUG
-            std::cout << "total count " << stats.total.count() << std::endl;
-            std::cout << "average count " << stats.average.count() << std::endl;
-            // ^ DEBUG
-
             ASSERT_TRUE(stats.total.count() > iterations);  // if that fails, try increasing iterations
             ASSERT_TRUE(stats.average.count() > 0);
         }
