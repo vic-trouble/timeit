@@ -47,7 +47,8 @@ namespace timeit
 #else
         typedef high_resolution_clock::duration clock_duration;
 #endif
-        clock_duration min = clock_duration::max(), max = clock_duration::min(), total = clock_duration::zero();
+        clock_duration min = clock_duration::max(), max = clock_duration::min();
+        std::chrono::duration<double> total{};
 
         for (auto i = iterations; i--; )
         {
