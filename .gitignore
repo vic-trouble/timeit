@@ -4,3 +4,4 @@ Release
 *.opensdf
 *.suo
 *.exe
+*.orig
